@@ -38,55 +38,68 @@
 #define RELAY_DDR DDRB      // port data direction register
 #define RELAY_PIN PB1       // relay: controls drink flow (on/off) - can be P1?
 
-#define SW_PORT 0   // port switches are on
-#define SW_DDR 0    // port data direction register
-#define SW_GREEN 0       // Switch 1 (green?)
-#define SW_RED 0       // Switch 2 (red?)
-#define SW_RED_LED 0   // LED for switch 1
-#define SW_GREEN_LED 0   // LED for switch 2
+// Switches: Red and Green, both with an integrated LED
+#define SW_PORT 0       // port switches are connected to
+#define SW_DDR 0        // port data direction register
+#define SW_GREEN 0      // Switch 1 (green?)
+#define SW_RED 0        // Switch 2 (red?)
+#define SW_RED_LED 0    // LED for switch 1
+#define SW_GREEN_LED 0  // LED for switch 2
 
-#define ENC_PORT 0  // port encoders are on
-#define ENC_DDR 0   // port data direction register
-#define ENCA 0      // Encoder pin A
-#define ENCB 0      // Encoder pin B
-#define ENC_SW 0    // Switch for encoder
+// Analog Potentiometer
+#define POT_PORT 0
+#define POT_PIN 0
 
-#define DISP_PORT 0 // port for segmented/led display
-#define DISP_DDR 0  // port data direction register
-// for shift register, need clock, latch, and data; define as necessary later
 
 
 #define POUR_ON true //boolean values for input to pourDrink function
 #define POUR_OFF false
-volatile bool pour;
 
+volatile bool pour = false;
 volatile int pourTime; // time pump is on (in milliseconds)
 
 void initIO(void)
 {
-    
+    // Set Pins as Inputs or Outputs
     RELAY_DDR |= (1<<RELAY_PIN);                    // Set relay pin (PB1) as output (check that it is correct pin)
     SW_DDR &= ~( (1<<SW_GREEN) || (1<<SW_RED) );    // initialize switch 1 and 2 as inputs
     SW_DDR |= ( (1<<SW_GREEN_LED) || (1<<SW_RED_LED) ); // initialize leds in buttons as outputs
-    ENC_DDR &= ~( (1<<ENCA) || (1<<ENCB) );         // initialize encoder pins as inputs
+
+    // Enable internal pull-up resistors on switches
+    SW_PORT |= _BV(SW_RED) || _BV(SW_GREEN);
     
-    //DDRB |= (1<<PB5); // Set PortB Pin5 as an output (why? was in old code)
+    // Make sure relay is off, just in case
+    RELAY_PORT &= ~_BV(RELAY_PIN);
+    
 }
 
-void moodLight(int state)
-{
-    // light LEDs (choose and attach)
-}
-
+//pours for pourTime milliseconds while (volatile) pour is true
 void pourDrink(void) // uses volatile global variables to pour drink
 {
-    //pours for pourTime milliseconds while pour is true
+
+    // read analog value
     
-    // while ( pourTimer && pour )
-    // {
-    //      // LED fade on/off, like a heartbeat
-    // |
+    int pourCounter = pourTime;
     
+    // pour drink, check every ms
+    while ( pour && pourCounter )
+    {
+        RELAY_PORT |= _BV(RELAY_PIN);
+        _delay_ms(1);
+        pourCounter--;
+    }
+    
+    RELAY_PORT &= ~_BV(RELAY_PIN); // stop pouring
+    
+}
+
+ISR() // put in vector
+{
+    // ISR: if either "pour" button has been pressed
+    // light correct button while being pressed
+    // If green button, pour while it is pressed
+    // If red button, set pourTime to equivalent POT_PIN value
+    // and set bool pour = true
 }
 
 
@@ -94,28 +107,15 @@ int main(void)
 {
 	initIO();
     
-    moodLight(1); // light decorative LEDs
+    if (pour)
+        pourDrink();
     
-    // check encoder movement (ISR)
-    // define a volatile encoder value, map to time in milliseconds (pourTime)
-    // light LED indicator with the value
     
-    // check if "pour" button has been pressed (ISR?)
-    // light button while being pressed
-    // if so, pour for pourTime milliseconds
-    // light LEDs in interesting manner while pouring
-    
-    // check if "stop" button has been pressed (ISR?)
-    // stop any pouring happening at that time; turn off lights too?
-    // light button while pressed
-    
-
     // for now, just toggle the relay pin (for HW debugging)
     while(1)
     {
         _delay_ms(1000); // wait a second
         
-        //PORTB ^= (1<<PORTB5); // toggle PORTB5
         RELAY_PORT ^= _BV(RELAY_PIN); // use xor to toggle pin
         
     }
