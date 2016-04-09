@@ -64,15 +64,19 @@ volatile int pourTime; // time pump is on (in milliseconds)
 void initIO(void)
 {
     // Set Pins as Inputs or Outputs
-    RELAY_DDR   |= (1<<RELAY_PIN);                    // Set relay pin (PB1) as output (check that it is correct pin)
-    SW_DDR      &= ~( (1<<SW_GREEN) | (1<<SW_RED) );    // initialize switch 1 and 2 as inputs
-    SW_DDR      |= ( (1<<SW_GREEN_LED) | (1<<SW_RED_LED) ); // initialize leds in buttons as outputs
+    RELAY_DDR   |= _BV(RELAY_PIN);                    // Set relay pin (PB1) as output (check that it is correct pin)
+    SW_DDR      &= ~( _BV(SW_GREEN) | _BV(SW_RED) );    // initialize switch 1 and 2 as inputs
+    SW_DDR      |= ( _BV(SW_GREEN_LED) | _BV(SW_RED_LED) ); // initialize leds in buttons as outputs
 
     // Enable internal pull-up resistors on switches
-    SW_PORT |= _BV(SW_RED) | _BV(SW_GREEN);
+    SW_PORT     |= _BV(SW_RED) | _BV(SW_GREEN);
     
     // Make sure relay is off, just in case
-    RELAY_PORT &= ~_BV(RELAY_PIN);
+    RELAY_PORT  &= ~_BV(RELAY_PIN);
+    
+    //Enable interrupt
+    PCICR       |= _BV(SW_INT_FLAG);
+    PCMSK1      |= _BV(SW_RED) | _BV(SW_GREEN);
     
 }
 
@@ -122,7 +126,7 @@ ISR(SW_INT_VECT) // put in vector
             
         case 1<<SW_RED:                     // red switch pressed
             
-        case (1<<SW_GREEN) | (1<<SW_RED):   // both switched pressed
+        case _BV(SW_GREEN) | _BV(SW_RED):   // both switched pressed
             // Only green switch pressed
     }
     
