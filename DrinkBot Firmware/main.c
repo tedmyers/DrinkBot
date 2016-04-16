@@ -40,14 +40,14 @@
 #define RELAY_PIN   PB1     // relay: controls drink flow (on/off) - can be P1?
 
 // Switches: Red and Green, both with an integrated LED
-#define SW_PORT         0   // port switches are connected to
-#define SW_DDR          0   // port data direction register
-#define SW_PIN          0   // pin for button port
-#define SW_GREEN        0   // Switch 1
-#define SW_RED          0   // Switch 2
-#define SW_RED_LED      0   // LED for switch 1
-#define SW_GREEN_LED    0   // LED for switch 2
-#define SW_INT_VECT     0   // Interrupt vector that corresponds to SW_port pins    (Ex: PCINT1_vect)
+#define SW_PORT         PORTC   // port switches are connected to
+#define SW_DDR          DDRC    // port data direction register
+#define SW_PIN          PINC    // pin for button port
+#define SW_GREEN        PC3     // Switch 1
+#define SW_RED          PC0     // Switch 2
+#define SW_RED_LED      PC1     // LED for switch 1
+#define SW_GREEN_LED    PC2     // LED for switch 2
+#define SW_INT_VECT     0       // Interrupt vector that corresponds to SW_port pins    (Ex: PCINT1_vect)
 #define SW_INT_FLAG     0   // Interrupt flag to set                                (Ex: PCIE1)
 
 // Analog Potentiometer
@@ -167,3 +167,39 @@ int main(void)
     
     return 0;   // never reached
 }
+
+/*********************************
+ 
+          ----------
+ PC6    -| 1     28 |-   PC5
+ PD0    -| 2     27 |-   PC4
+ PD1    -| 3     26 |-   PC3
+ PD2    -| 4     25 |-   PC2
+ PD3    -| 5     24 |-   PC1
+ PD4    -| 6     23 |-   PC0
+ VCC    -| 7     22 |-   GND
+ GND    -| 8     21 |-   AREF
+ PB6    -| 9     20 |-   AVCC
+ PB7    -| 10    19 |-   PB5
+ PD5    -| 11    18 |-   PB4
+ PD6    -| 12    17 |-   PB3
+ PD7    -| 13    16 |-   PB2
+ PB0    -| 14    15 |-   PB1
+          ----------
+ 
+ 
+ PIN CONNECTIONS
+ 
+ Device             Pin     Wire Color
+ ------             ---     ----------
+ Red Switch LED     PC1     Grey wire
+ Red Switch         PC0     White wire
+ Green Switch LED   PC2     Purple wire
+ Green Switch       PC3     Blue wire
+ Relay              PB1     N/A
+ Potentiometer      0       Tan wire (GND = brown, +5 = Red)
+ 
+ 
+ 
+ *******************************/
+
