@@ -37,7 +37,7 @@
 // Relay: controls drink pouring
 #define RELAY_PORT  PORTB   // port relay connected to
 #define RELAY_DDR   DDRB    // port data direction register
-#define RELAY_PIN   PB1     // relay: controls drink flow (on/off) - can be P1?
+#define RELAY_PIN   PB0     // relay: controls drink flow (on/off) - can be P1?
 
 // Switches: Red and Green, both with an integrated LED
 #define SW_PORT         PORTC   // port switches are connected to
@@ -51,55 +51,45 @@
 #define SW_INT_FLAG     0   // Interrupt flag to set                                (Ex: PCIE1)
 
 // Analog Potentiometer
-#define POT_PORT 0
-#define POT_PIN  0
+#define POT_PORT PORTC
+#define POT_DDR  DDRC
+//#define POT_PIN  PINC
+#define POT      PC4
 
-// pouring
-#define POUR_ON true //boolean values for input to pourDrink function
-#define POUR_OFF false
+//boolean values for input to pourDrink function
+#define POUR_ON     true 
+#define POUR_OFF    false
 
 volatile bool pour_drink = false;
 volatile int pourTime; // time pump is on (in milliseconds)
 
 void initIO(void)
 {
-    // Set Pins as Inputs or Outputs
-    RELAY_DDR   |= _BV(RELAY_PIN);                    // Set relay pin (PB1) as output (check that it is correct pin)
-    SW_DDR      &= ~( _BV(SW_GREEN) | _BV(SW_RED) );    // initialize switch 1 and 2 as inputs
-    SW_DDR      |= ( _BV(SW_GREEN_LED) | _BV(SW_RED_LED) ); // initialize leds in buttons as outputs
-
+    // set relay pin as output
+    RELAY_DDR   |= _BV(RELAY_PIN);
+    
+    // initialize switches as inputs
+    SW_DDR      &= ~( _BV(SW_GREEN) | _BV(SW_RED) );
+    
+    // initialize leds in buttons as outputs
+    SW_DDR      |= ( _BV(SW_GREEN_LED) | _BV(SW_RED_LED) );
+    
+    // initialize potentiometer as input
+    POT_DDR     |= _BV(POT);
+    
     // Enable internal pull-up resistors on switches
     SW_PORT     |= _BV(SW_RED) | _BV(SW_GREEN);
     
     // Make sure relay is off, just in case
     RELAY_PORT  &= ~_BV(RELAY_PIN);
     
-    //Enable interrupt
+    //Enable interrupts
     PCICR       |= _BV(SW_INT_FLAG);
     PCMSK1      |= _BV(SW_RED) | _BV(SW_GREEN);
-    
 }
 
-/*
- 
- ISR(PCINT1_vect){
- //Turn on all of port D
- PORTD |= (1 << PD5);
- }
- 
- void initIO(void) {
- //Define PC3 as input with pullup-resistor
- DDRC &= ~(1 << button);
- PORTC |= (1 << button);
- 
- //Enable interrupt for PCINT11
- PCICR |= _BV(PCIE1);
- PCMSK1 |= (_BV(button_interrupt));
- 
- */
-
 //pours for pourTime milliseconds while (volatile) pour is true
-void pourDrink(void) // uses volatile global variables to pour drink
+void pourDrink_timed(void) // uses volatile global variables to pour drink
 {
 
     // read analog value
@@ -122,9 +112,9 @@ ISR(SW_INT_VECT) // put in vector
 {
     switch ( SW_PIN )
     {
-        case 1<<SW_GREEN:                   // green button pressed
+        case _BV(SW_GREEN):                   // green button pressed
             
-        case 1<<SW_RED:                     // red switch pressed
+        case _BV(SW_RED):                     // red button pressed
             
         case _BV(SW_GREEN) | _BV(SW_RED):   // both switched pressed
             // Only green switch pressed
@@ -152,8 +142,26 @@ int main(void)
 {
 	initIO();
     
+    // enable interrupts
+    sei();
+    
     if (pour_drink)
         pourDrink();
+    
+    // loops forever
+    for (;;)
+    {
+        if ( SW_PIN & _BV(SW_GREEN) == 0 )  // switch pressed (brought low)
+        {
+            RELAY_PORT  |=  _BV(RELAY_PIN);     // pour drink
+            SW_PORT     |=  _BV(SW_GREEN_LED);  // turn light on
+        }
+        else
+        {
+            RELAY_PORT  &= ~_BV(RELAY_PIN);     // stop pouring
+            SW_PORT     &= ~_BV(SW_GREEN_LED);  // turn off LED
+        }
+    }
     
     
     // for now, just toggle the relay pin (for HW debugging)
@@ -196,8 +204,8 @@ int main(void)
  Red Switch         PC0     White wire
  Green Switch LED   PC2     Purple wire
  Green Switch       PC3     Blue wire
- Relay              PB1     N/A
- Potentiometer      0       Tan wire (GND = brown, +5 = Red)
+ Relay              PB0     N/A (green on board)
+ Potentiometer      PC4     Tan wire (GND = brown, +5 = Red)
  
  
  
