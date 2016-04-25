@@ -47,7 +47,7 @@
 #define SW_RED          PC0     // Switch 2
 #define SW_RED_LED      PC1     // LED for switch 1
 #define SW_GREEN_LED    PC2     // LED for switch 2
-#define SW_INT_VECT     0       // Interrupt vector that corresponds to SW_port pins    (Ex: PCINT1_vect)
+#define SW_INT_VECT     PCINT1_vect       // Interrupt vector that corresponds to SW_port pins    (Ex: PCINT1_vect)
 #define SW_INT_FLAG     0   // Interrupt flag to set                                (Ex: PCIE1)
 
 // Analog Potentiometer
@@ -108,6 +108,8 @@ void pourDrink_timed(void) // uses volatile global variables to pour drink
     
 }
 
+#if 0
+
 ISR(SW_INT_VECT) // put in vector
 {
     switch ( SW_PIN )
@@ -116,7 +118,7 @@ ISR(SW_INT_VECT) // put in vector
             
         case _BV(SW_RED):                     // red button pressed
             
-        case _BV(SW_GREEN) | _BV(SW_RED):   // both switched pressed
+        case ( _BV(SW_GREEN) | _BV(SW_RED) ):   // both switched pressed
             // Only green switch pressed
     }
     
@@ -137,10 +139,14 @@ ISR(SW_INT_VECT) // put in vector
     // 11 -> 10/01  keep pouring
 }
 
+#endif
+
 
 int main(void)
 {
 	initIO();
+    
+#if 0
     
     // enable interrupts
     sei();
@@ -162,6 +168,8 @@ int main(void)
             SW_PORT     &= ~_BV(SW_GREEN_LED);  // turn off LED
         }
     }
+    
+#endif
     
     
     // for now, just toggle the relay pin (for HW debugging)
