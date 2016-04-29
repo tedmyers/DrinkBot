@@ -134,7 +134,7 @@ void initIO(void)
 000000be <pourDrink_timed>:
 void pourDrink_timed(void) // uses volatile global variables to pour drink
 {
-
+    
     // read analog value
     
     int pourCounter = pourTime;
@@ -179,18 +179,18 @@ void pourDrink_timed(void) // uses volatile global variables to pour drink
 
 int main(void)
 {
-	initIO();
+    initIO();
   e8:	0e 94 48 00 	call	0x90	; 0x90 <initIO>
     // for now, just toggle the relay pin (for HW debugging)
     while(1)
     {
-        _delay_ms(1000); // wait a second
+        _delay_ms(500); // wait a second
         
         RELAY_PORT ^= _BV(RELAY_PIN); // use xor to toggle pin
   ec:	91 e0       	ldi	r25, 0x01	; 1
-  ee:	2f e3       	ldi	r18, 0x3F	; 63
-  f0:	3d e0       	ldi	r19, 0x0D	; 13
-  f2:	83 e0       	ldi	r24, 0x03	; 3
+  ee:	2f e9       	ldi	r18, 0x9F	; 159
+  f0:	36 e8       	ldi	r19, 0x86	; 134
+  f2:	81 e0       	ldi	r24, 0x01	; 1
   f4:	21 50       	subi	r18, 0x01	; 1
   f6:	30 40       	sbci	r19, 0x00	; 0
   f8:	80 40       	sbci	r24, 0x00	; 0

@@ -1,11 +1,11 @@
 /**********************************************
  
-    Firmware for the DrinkBot Device
-                2/27/2016
+ Firmware for the DrinkBot Device
+ 2/27/2016
  
-        Ted Myers & Noah Johnson
+ Ted Myers & Noah Johnson
  
-**********************************************/
+ **********************************************/
 
 // Currently untested code
 
@@ -57,7 +57,7 @@
 #define POT      PC4
 
 //boolean values for input to pourDrink function
-#define POUR_ON     true 
+#define POUR_ON     true
 #define POUR_OFF    false
 
 volatile bool pour_drink = false;
@@ -91,7 +91,7 @@ void initIO(void)
 //pours for pourTime milliseconds while (volatile) pour is true
 void pourDrink_timed(void) // uses volatile global variables to pour drink
 {
-
+    
     // read analog value
     
     int pourCounter = pourTime;
@@ -144,7 +144,7 @@ ISR(SW_INT_VECT) // put in vector
 
 int main(void)
 {
-	initIO();
+    initIO();
     
 #if 0
     
@@ -175,7 +175,7 @@ int main(void)
     // for now, just toggle the relay pin (for HW debugging)
     while(1)
     {
-        _delay_ms(1000); // wait a second
+        _delay_ms(500); // wait a second
         
         RELAY_PORT ^= _BV(RELAY_PIN); // use xor to toggle pin
         
@@ -186,7 +186,7 @@ int main(void)
 
 /*********************************
  
-          ----------
+ ----------
  PC6    -| 1     28 |-   PC5
  PD0    -| 2     27 |-   PC4
  PD1    -| 3     26 |-   PC3
@@ -201,7 +201,7 @@ int main(void)
  PD6    -| 12    17 |-   PB3
  PD7    -| 13    16 |-   PB2
  PB0    -| 14    15 |-   PB1
-          ----------
+ ----------
  
  
  PIN CONNECTIONS

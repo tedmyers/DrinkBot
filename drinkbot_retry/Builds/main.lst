@@ -8,124 +8,124 @@
    9               	.Ltext0:
  110               	.global	initIO
  112               	initIO:
-   1:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** /**********************************************
-   2:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****  
-   3:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     Firmware for the DrinkBot Device
-   4:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****                 2/27/2016
-   5:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****  
-   6:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         Ted Myers & Noah Johnson
-   7:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****  
-   8:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** **********************************************/
-   9:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  10:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // Currently untested code
-  11:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  12:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  13:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // Basic idea: code runs an Atmega328p that is connected to:
-  14:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // -Two buttons w/integrated LEDs
-  15:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // -One pushbutton rotary encoder
-  16:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // -Display LEDs?
-  17:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // -Decorative lighting LEDs
-  18:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // -Buzzer/speaker?
-  19:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // -Electromechanical relay, turns on/off pump
-  20:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  21:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // Pours a drink for a user-defined length of time
-  22:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  23:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // To do:
-  24:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // -Decide and solder all devices, update pins in code
-  25:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // -Decide about lighting and visual indication
-  26:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // -Write code for everything
-  27:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // -
-  28:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  29:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  30:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  31:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #include <stdio.h>
-  32:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #include <avr/io.h>
-  33:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #include <avr/interrupt.h>
-  34:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #include <util/delay.h>
-  35:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #include <stdbool.h> // for boolean values
-  36:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  37:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // Relay: controls drink pouring
-  38:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define RELAY_PORT  PORTB   // port relay connected to
-  39:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define RELAY_DDR   DDRB    // port data direction register
-  40:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define RELAY_PIN   PB0     // relay: controls drink flow (on/off) - can be P1?
-  41:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  42:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // Switches: Red and Green, both with an integrated LED
-  43:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define SW_PORT         PORTC   // port switches are connected to
-  44:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define SW_DDR          DDRC    // port data direction register
-  45:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define SW_PIN          PINC    // pin for button port
-  46:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define SW_GREEN        PC3     // Switch 1
-  47:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define SW_RED          PC0     // Switch 2
-  48:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define SW_RED_LED      PC1     // LED for switch 1
-  49:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define SW_GREEN_LED    PC2     // LED for switch 2
-  50:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define SW_INT_VECT     PCINT1_vect       // Interrupt vector that corresponds to SW_port pins    (
-  51:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define SW_INT_FLAG     0   // Interrupt flag to set                                (Ex: PCIE1)
-  52:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  53:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** // Analog Potentiometer
-  54:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define POT_PORT PORTC
-  55:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define POT_DDR  DDRC
-  56:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** //#define POT_PIN  PINC
-  57:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define POT      PC4
-  58:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  59:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** //boolean values for input to pourDrink function
-  60:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define POUR_ON     true 
-  61:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #define POUR_OFF    false
-  62:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  63:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** volatile bool pour_drink = false;
-  64:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** volatile int pourTime; // time pump is on (in milliseconds)
-  65:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  66:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** void initIO(void)
-  67:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** {
+   1:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** /**********************************************
+   2:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****  
+   3:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****  Firmware for the DrinkBot Device
+   4:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****  2/27/2016
+   5:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****  
+   6:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****  Ted Myers & Noah Johnson
+   7:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****  
+   8:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****  **********************************************/
+   9:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  10:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // Currently untested code
+  11:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  12:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  13:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // Basic idea: code runs an Atmega328p that is connected to:
+  14:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // -Two buttons w/integrated LEDs
+  15:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // -One pushbutton rotary encoder
+  16:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // -Display LEDs?
+  17:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // -Decorative lighting LEDs
+  18:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // -Buzzer/speaker?
+  19:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // -Electromechanical relay, turns on/off pump
+  20:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  21:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // Pours a drink for a user-defined length of time
+  22:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  23:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // To do:
+  24:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // -Decide and solder all devices, update pins in code
+  25:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // -Decide about lighting and visual indication
+  26:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // -Write code for everything
+  27:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // -
+  28:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  29:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  30:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  31:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #include <stdio.h>
+  32:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #include <avr/io.h>
+  33:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #include <avr/interrupt.h>
+  34:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #include <util/delay.h>
+  35:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #include <stdbool.h> // for boolean values
+  36:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  37:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // Relay: controls drink pouring
+  38:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define RELAY_PORT  PORTB   // port relay connected to
+  39:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define RELAY_DDR   DDRB    // port data direction register
+  40:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define RELAY_PIN   PB0     // relay: controls drink flow (on/off) - can be P1?
+  41:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  42:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // Switches: Red and Green, both with an integrated LED
+  43:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define SW_PORT         PORTC   // port switches are connected to
+  44:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define SW_DDR          DDRC    // port data direction register
+  45:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define SW_PIN          PINC    // pin for button port
+  46:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define SW_GREEN        PC3     // Switch 1
+  47:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define SW_RED          PC0     // Switch 2
+  48:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define SW_RED_LED      PC1     // LED for switch 1
+  49:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define SW_GREEN_LED    PC2     // LED for switch 2
+  50:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define SW_INT_VECT     PCINT1_vect       // Interrupt vector that corresponds to SW_port pins    (
+  51:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define SW_INT_FLAG     0   // Interrupt flag to set                                (Ex: PCIE1)
+  52:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  53:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** // Analog Potentiometer
+  54:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define POT_PORT PORTC
+  55:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define POT_DDR  DDRC
+  56:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** //#define POT_PIN  PINC
+  57:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define POT      PC4
+  58:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  59:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** //boolean values for input to pourDrink function
+  60:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define POUR_ON     true
+  61:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #define POUR_OFF    false
+  62:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  63:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** volatile bool pour_drink = false;
+  64:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** volatile int pourTime; // time pump is on (in milliseconds)
+  65:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  66:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** void initIO(void)
+  67:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** {
  114               	.LM0:
  115               	.LFBB1:
  116               	/* prologue: function */
  117               	/* frame size = 0 */
  118               	/* stack size = 0 */
  119               	.L__stack_usage = 0
-  68:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // set relay pin as output
-  69:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     RELAY_DDR   |= _BV(RELAY_PIN);
+  68:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // set relay pin as output
+  69:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     RELAY_DDR   |= _BV(RELAY_PIN);
  121               	.LM1:
  122 0000 209A      		sbi 0x4,0
-  70:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
-  71:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // initialize switches as inputs
-  72:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     SW_DDR      &= ~( _BV(SW_GREEN) | _BV(SW_RED) );
+  70:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+  71:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // initialize switches as inputs
+  72:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     SW_DDR      &= ~( _BV(SW_GREEN) | _BV(SW_RED) );
  124               	.LM2:
  125 0002 87B1      		in r24,0x7
  126 0004 867F      		andi r24,lo8(-10)
  127 0006 87B9      		out 0x7,r24
-  73:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
-  74:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // initialize leds in buttons as outputs
-  75:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     SW_DDR      |= ( _BV(SW_GREEN_LED) | _BV(SW_RED_LED) );
+  73:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+  74:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // initialize leds in buttons as outputs
+  75:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     SW_DDR      |= ( _BV(SW_GREEN_LED) | _BV(SW_RED_LED) );
  129               	.LM3:
  130 0008 87B1      		in r24,0x7
  131 000a 8660      		ori r24,lo8(6)
  132 000c 87B9      		out 0x7,r24
-  76:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
-  77:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // initialize potentiometer as input
-  78:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     POT_DDR     |= _BV(POT);
+  76:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+  77:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // initialize potentiometer as input
+  78:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     POT_DDR     |= _BV(POT);
  134               	.LM4:
  135 000e 3C9A      		sbi 0x7,4
-  79:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
-  80:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // Enable internal pull-up resistors on switches
-  81:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     SW_PORT     |= _BV(SW_RED) | _BV(SW_GREEN);
+  79:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+  80:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // Enable internal pull-up resistors on switches
+  81:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     SW_PORT     |= _BV(SW_RED) | _BV(SW_GREEN);
  137               	.LM5:
  138 0010 88B1      		in r24,0x8
  139 0012 8960      		ori r24,lo8(9)
  140 0014 88B9      		out 0x8,r24
-  82:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
-  83:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // Make sure relay is off, just in case
-  84:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     RELAY_PORT  &= ~_BV(RELAY_PIN);
+  82:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+  83:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // Make sure relay is off, just in case
+  84:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     RELAY_PORT  &= ~_BV(RELAY_PIN);
  142               	.LM6:
  143 0016 2898      		cbi 0x5,0
-  85:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
-  86:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     //Enable interrupts
-  87:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     PCICR       |= _BV(SW_INT_FLAG);
+  85:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+  86:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     //Enable interrupts
+  87:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     PCICR       |= _BV(SW_INT_FLAG);
  145               	.LM7:
  146 0018 E8E6      		ldi r30,lo8(104)
  147 001a F0E0      		ldi r31,0
  148 001c 8081      		ld r24,Z
  149 001e 8160      		ori r24,lo8(1)
  150 0020 8083      		st Z,r24
-  88:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     PCMSK1      |= _BV(SW_RED) | _BV(SW_GREEN);
+  88:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     PCMSK1      |= _BV(SW_RED) | _BV(SW_GREEN);
  152               	.LM8:
  153 0022 ECE6      		ldi r30,lo8(108)
  154 0024 F0E0      		ldi r31,0
@@ -136,28 +136,28 @@
  160               	.Lscope1:
  162               	.global	pourDrink_timed
  164               	pourDrink_timed:
-  89:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** }
-  90:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  91:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** //pours for pourTime milliseconds while (volatile) pour is true
-  92:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** void pourDrink_timed(void) // uses volatile global variables to pour drink
-  93:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** {
+  89:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** }
+  90:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+  91:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** //pours for pourTime milliseconds while (volatile) pour is true
+  92:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** void pourDrink_timed(void) // uses volatile global variables to pour drink
+  93:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** {
  166               	.LM9:
  167               	.LFBB2:
  168               	/* prologue: function */
  169               	/* frame size = 0 */
  170               	/* stack size = 0 */
  171               	.L__stack_usage = 0
-  94:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
-  95:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // read analog value
-  96:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
-  97:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     int pourCounter = pourTime;
+  94:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+  95:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // read analog value
+  96:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+  97:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     int pourCounter = pourTime;
  173               	.LM10:
  174 002e 8091 0000 		lds r24,pourTime
  175 0032 9091 0000 		lds r25,pourTime+1
  176               	.L3:
-  98:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
-  99:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // pour drink, check every ms
- 100:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     while ( pour_drink && pourCounter )
+  98:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+  99:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // pour drink, check every ms
+ 100:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     while ( pour_drink && pourCounter )
  178               	.LM11:
  179 0036 2091 0000 		lds r18,pour_drink
  180 003a 2223      		tst r18
@@ -165,8 +165,8 @@
  183               	.LM12:
  184 003e 0097      		sbiw r24,0
  185 0040 01F0      		breq .L4
- 101:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     {
- 102:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         RELAY_PORT |= _BV(RELAY_PIN);
+ 101:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     {
+ 102:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         RELAY_PORT |= _BV(RELAY_PIN);
  187               	.LM13:
  188 0042 289A      		sbi 0x5,0
  189               	.LBB6:
@@ -345,15 +345,15 @@
  201               	.LBE7:
  202               	.LBE6:
  204               	.Ltext2:
- 103:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         _delay_ms(1);
- 104:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         pourCounter--;
+ 103:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         _delay_ms(1);
+ 104:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         pourCounter--;
  206               	.LM15:
  207 0050 0197      		sbiw r24,1
  208 0052 00C0      		rjmp .L3
  209               	.L4:
- 105:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     }
- 106:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 107:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     RELAY_PORT &= ~_BV(RELAY_PIN); // stop pouring
+ 105:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     }
+ 106:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 107:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     RELAY_PORT &= ~_BV(RELAY_PIN); // stop pouring
  211               	.LM16:
  212 0054 2898      		cbi 0x5,0
  213 0056 0895      		ret
@@ -361,87 +361,87 @@
  219               		.section	.text.startup,"ax",@progbits
  221               	.global	main
  223               	main:
- 108:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 109:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** }
- 110:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
- 111:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #if 0
- 112:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
- 113:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** ISR(SW_INT_VECT) // put in vector
- 114:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** {
- 115:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     switch ( SW_PIN )
- 116:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     {
- 117:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         case _BV(SW_GREEN):                   // green button pressed
- 118:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****             
- 119:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         case _BV(SW_RED):                     // red button pressed
- 120:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****             
- 121:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         case ( _BV(SW_GREEN) | _BV(SW_RED) ):   // both switched pressed
- 122:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****             // Only green switch pressed
- 123:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     }
- 124:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 125:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 126:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // ISR: if either "pour" button has been pressed
- 127:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // light correct button while being pressed
- 128:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // If green button, pour while it is pressed
- 129:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // If red button, set pourTime to equivalent POT_PIN value
- 130:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // and set bool pour = true
- 131:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 132:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // GR
- 133:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // 00           All off
- 134:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // 01           Pour based on time
- 135:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // 10           Pour while pressed
- 136:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // 11           Pour while pressed, then based on time
- 137:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // 01 -> 11     Initially: pour based on time; then stop
- 138:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // 10 -> 11     Initially: pour while pressed; then stop
- 139:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // 11 -> 10/01  keep pouring
- 140:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** }
- 141:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
- 142:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #endif
- 143:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
- 144:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 
- 145:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** int main(void)
- 146:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** {
+ 108:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 109:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** }
+ 110:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+ 111:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #if 0
+ 112:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+ 113:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** ISR(SW_INT_VECT) // put in vector
+ 114:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** {
+ 115:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     switch ( SW_PIN )
+ 116:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     {
+ 117:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         case _BV(SW_GREEN):                   // green button pressed
+ 118:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****             
+ 119:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         case _BV(SW_RED):                     // red button pressed
+ 120:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****             
+ 121:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         case ( _BV(SW_GREEN) | _BV(SW_RED) ):   // both switched pressed
+ 122:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****             // Only green switch pressed
+ 123:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     }
+ 124:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 125:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 126:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // ISR: if either "pour" button has been pressed
+ 127:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // light correct button while being pressed
+ 128:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // If green button, pour while it is pressed
+ 129:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // If red button, set pourTime to equivalent POT_PIN value
+ 130:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // and set bool pour = true
+ 131:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 132:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // GR
+ 133:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // 00           All off
+ 134:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // 01           Pour based on time
+ 135:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // 10           Pour while pressed
+ 136:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // 11           Pour while pressed, then based on time
+ 137:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // 01 -> 11     Initially: pour based on time; then stop
+ 138:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // 10 -> 11     Initially: pour while pressed; then stop
+ 139:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // 11 -> 10/01  keep pouring
+ 140:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** }
+ 141:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+ 142:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #endif
+ 143:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+ 144:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** 
+ 145:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** int main(void)
+ 146:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** {
  225               	.LM17:
  226               	.LFBB3:
  227               	/* prologue: function */
  228               	/* frame size = 0 */
  229               	/* stack size = 0 */
  230               	.L__stack_usage = 0
- 147:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** 	initIO();
+ 147:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     initIO();
  232               	.LM18:
  233 0000 0E94 0000 		call initIO
- 148:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 149:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #if 0
- 150:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 151:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // enable interrupts
- 152:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     sei();
- 153:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 154:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     if (pour_drink)
- 155:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         pourDrink();
- 156:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 157:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // loops forever
- 158:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     for (;;)
- 159:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     {
- 160:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         if ( SW_PIN & _BV(SW_GREEN) == 0 )  // switch pressed (brought low)
- 161:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         {
- 162:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****             RELAY_PORT  |=  _BV(RELAY_PIN);     // pour drink
- 163:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****             SW_PORT     |=  _BV(SW_GREEN_LED);  // turn light on
- 164:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         }
- 165:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         else
- 166:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         {
- 167:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****             RELAY_PORT  &= ~_BV(RELAY_PIN);     // stop pouring
- 168:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****             SW_PORT     &= ~_BV(SW_GREEN_LED);  // turn off LED
- 169:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         }
- 170:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     }
- 171:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 172:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c **** #endif
- 173:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 174:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     
- 175:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     // for now, just toggle the relay pin (for HW debugging)
- 176:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     while(1)
- 177:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****     {
- 178:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         _delay_ms(1000); // wait a second
- 179:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         
- 180:/Users/tedmyers/GitHub/DrinkBot/DrinkBot Firmware/main.c ****         RELAY_PORT ^= _BV(RELAY_PIN); // use xor to toggle pin
+ 148:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 149:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #if 0
+ 150:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 151:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // enable interrupts
+ 152:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     sei();
+ 153:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 154:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     if (pour_drink)
+ 155:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         pourDrink();
+ 156:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 157:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // loops forever
+ 158:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     for (;;)
+ 159:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     {
+ 160:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         if ( SW_PIN & _BV(SW_GREEN) == 0 )  // switch pressed (brought low)
+ 161:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         {
+ 162:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****             RELAY_PORT  |=  _BV(RELAY_PIN);     // pour drink
+ 163:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****             SW_PORT     |=  _BV(SW_GREEN_LED);  // turn light on
+ 164:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         }
+ 165:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         else
+ 166:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         {
+ 167:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****             RELAY_PORT  &= ~_BV(RELAY_PIN);     // stop pouring
+ 168:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****             SW_PORT     &= ~_BV(SW_GREEN_LED);  // turn off LED
+ 169:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         }
+ 170:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     }
+ 171:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 172:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c **** #endif
+ 173:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 174:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     
+ 175:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     // for now, just toggle the relay pin (for HW debugging)
+ 176:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     while(1)
+ 177:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****     {
+ 178:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         _delay_ms(500); // wait a second
+ 179:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         
+ 180:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c ****         RELAY_PORT ^= _BV(RELAY_PIN); // use xor to toggle pin
  235               	.LM19:
  236 0004 91E0      		ldi r25,lo8(1)
  237               	.L11:
@@ -449,9 +449,9 @@
  239               	.LBB9:
  241               	.Ltext3:
  243               	.LM20:
- 244 0006 2FE3      		ldi r18,lo8(199999)
- 245 0008 3DE0      		ldi r19,hi8(199999)
- 246 000a 83E0      		ldi r24,hlo8(199999)
+ 244 0006 2FE9      		ldi r18,lo8(99999)
+ 245 0008 36E8      		ldi r19,hi8(99999)
+ 246 000a 81E0      		ldi r24,hlo8(99999)
  247 000c 2150      		1: subi r18,1
  248 000e 3040      		sbci r19,0
  249 0010 8040      		sbci r24,0
@@ -478,16 +478,16 @@
  278               	.global __do_clear_bss
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccD8bTzA.s:2      *ABS*:0000003e __SP_H__
-/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccD8bTzA.s:3      *ABS*:0000003d __SP_L__
-/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccD8bTzA.s:4      *ABS*:0000003f __SREG__
-/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccD8bTzA.s:5      *ABS*:00000000 __tmp_reg__
-/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccD8bTzA.s:6      *ABS*:00000001 __zero_reg__
-/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccD8bTzA.s:112    .text:00000000 initIO
-/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccD8bTzA.s:164    .text:0000002e pourDrink_timed
+/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccte8vZz.s:2      *ABS*:0000003e __SP_H__
+/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccte8vZz.s:3      *ABS*:0000003d __SP_L__
+/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccte8vZz.s:4      *ABS*:0000003f __SREG__
+/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccte8vZz.s:5      *ABS*:00000000 __tmp_reg__
+/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccte8vZz.s:6      *ABS*:00000001 __zero_reg__
+/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccte8vZz.s:112    .text:00000000 initIO
+/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccte8vZz.s:164    .text:0000002e pourDrink_timed
                             *COM*:00000002 pourTime
-/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccD8bTzA.s:270    .bss:00000000 pour_drink
-/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccD8bTzA.s:223    .text.startup:00000000 main
+/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccte8vZz.s:270    .bss:00000000 pour_drink
+/var/folders/l2/bb4sdg190jl6980wclmsgs7h0000gr/T//ccte8vZz.s:223    .text.startup:00000000 main
 
 UNDEFINED SYMBOLS
 __do_clear_bss

@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:DrinkBot Firmware.xcodeproj">
+      location = "self:/Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware.xcodeproj">
    </FileRef>
 </Workspace>

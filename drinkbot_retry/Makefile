@@ -40,7 +40,7 @@
 
 #include conf.mk
 # MCU name
-MCU = atmega328p
+MCU = atmega328
 
 
 # Processor frequency.
@@ -50,7 +50,7 @@ MCU = atmega328p
 #     automatically to create a 32-bit value in your source code.
 F_CPU = 1000000
 
-AVRDUDE_PROGRAMMER = avrisp
+AVRDUDE_PROGRAMMER = usbasp
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
 AVRDUDE_PORT = /dev/cu.usbmodem*    # programmer connected to serial device
