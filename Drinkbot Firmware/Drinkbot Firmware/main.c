@@ -186,7 +186,7 @@ int main(void)
     // for now, just toggle the relay pin (for HW debugging)
     while(1)
     {
-        _delay_ms(500); // wait a second
+        _delay_ms(1000); // wait a second
         
         RELAY_PORT ^= _BV(RELAY_PIN); // use xor to toggle pin
         

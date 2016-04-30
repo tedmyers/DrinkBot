@@ -1,4 +1,5 @@
-Builds/main.o: /Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c \
+Builds/main.o: \
+ /Users/tedmyers/GitHub/DrinkBot/Drinkbot\ Firmware/Drinkbot\ Firmware/main.c \
  /usr/local/CrossPack-AVR-20131216/avr/include/stdio.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/inttypes.h \
  /usr/local/CrossPack-AVR-20131216/lib/gcc/avr/4.8.1/include/stdint.h \
@@ -7,7 +8,6 @@ Builds/main.o: /Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c \
  /usr/local/CrossPack-AVR-20131216/lib/gcc/avr/4.8.1/include/stddef.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/avr/io.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/avr/sfr_defs.h \
- /usr/local/CrossPack-AVR-20131216/avr/include/avr/iom328.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/avr/iom328p.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/avr/portpins.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/avr/common.h \
@@ -35,8 +35,6 @@ Builds/main.o: /Users/tedmyers/GitHub/DrinkBot/Drinkbot_Firmware/main.c \
 /usr/local/CrossPack-AVR-20131216/avr/include/avr/io.h:
 
 /usr/local/CrossPack-AVR-20131216/avr/include/avr/sfr_defs.h:
-
-/usr/local/CrossPack-AVR-20131216/avr/include/avr/iom328.h:
 
 /usr/local/CrossPack-AVR-20131216/avr/include/avr/iom328p.h:
 

@@ -7,46 +7,45 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C4E7FAFC1CD4214200D90DC6 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = C4E7FAFB1CD4214200D90DC6 /* main.c */; };
+		C46B73851CD4703C001F8DF8 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = C46B73841CD4703C001F8DF8 /* main.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C4E7FAF81CD4214200D90DC6 /* Index */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Index; sourceTree = BUILT_PRODUCTS_DIR; };
-		C4E7FAFB1CD4214200D90DC6 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		C4E7FAFE1CD4214200D90DC6 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		C46B73811CD4703C001F8DF8 /* Index */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Index; sourceTree = BUILT_PRODUCTS_DIR; };
+		C46B73841CD4703C001F8DF8 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		C46B73871CD4703C001F8DF8 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		C4E7FAED1CD4214200D90DC6 = {
+		C46B73761CD4703C001F8DF8 = {
 			isa = PBXGroup;
 			children = (
-				C4E7FAFA1CD4214200D90DC6 /* Drinkbot_Firmware */,
-				C4E7FAF91CD4214200D90DC6 /* Products */,
+				C46B73831CD4703C001F8DF8 /* Drinkbot Firmware */,
+				C46B73821CD4703C001F8DF8 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		C4E7FAF91CD4214200D90DC6 /* Products */ = {
+		C46B73821CD4703C001F8DF8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C4E7FAF81CD4214200D90DC6 /* Index */,
+				C46B73811CD4703C001F8DF8 /* Index */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C4E7FAFA1CD4214200D90DC6 /* Drinkbot_Firmware */ = {
+		C46B73831CD4703C001F8DF8 /* Drinkbot Firmware */ = {
 			isa = PBXGroup;
 			children = (
-				C4E7FAFB1CD4214200D90DC6 /* main.c */,
-				C4E7FAFD1CD4214200D90DC6 /* Makefiles */,
+				C46B73841CD4703C001F8DF8 /* main.c */,
+				C46B73861CD4703C001F8DF8 /* Makefiles */,
 			);
-			name = Drinkbot_Firmware;
-			path = drinkbot_retry;
+			path = "Drinkbot Firmware";
 			sourceTree = "<group>";
 		};
-		C4E7FAFD1CD4214200D90DC6 /* Makefiles */ = {
+		C46B73861CD4703C001F8DF8 /* Makefiles */ = {
 			isa = PBXGroup;
 			children = (
-				C4E7FAFE1CD4214200D90DC6 /* Makefile */,
+				C46B73871CD4703C001F8DF8 /* Makefile */,
 			);
 			name = Makefiles;
 			sourceTree = "<group>";
@@ -54,10 +53,10 @@
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
-		C4E7FAF21CD4214200D90DC6 /* All */ = {
+		C46B737B1CD4703C001F8DF8 /* All */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "all -C \"$(PROJECT)\"";
-			buildConfigurationList = C4E7FB011CD4214200D90DC6 /* Build configuration list for PBXLegacyTarget "All" */;
+			buildConfigurationList = C46B738A1CD4703C001F8DF8 /* Build configuration list for PBXLegacyTarget "All" */;
 			buildPhases = (
 			);
 			buildToolPath = make;
@@ -67,10 +66,10 @@
 			passBuildSettingsInEnvironment = 1;
 			productName = All;
 		};
-		C4E7FAF31CD4214200D90DC6 /* Build */ = {
+		C46B737C1CD4703C001F8DF8 /* Build */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "clean build -C \"$(PROJECT)\"";
-			buildConfigurationList = C4E7FB041CD4214200D90DC6 /* Build configuration list for PBXLegacyTarget "Build" */;
+			buildConfigurationList = C46B738D1CD4703C001F8DF8 /* Build configuration list for PBXLegacyTarget "Build" */;
 			buildPhases = (
 			);
 			buildToolPath = make;
@@ -80,10 +79,10 @@
 			passBuildSettingsInEnvironment = 1;
 			productName = Build;
 		};
-		C4E7FAF41CD4214200D90DC6 /* Upload */ = {
+		C46B737D1CD4703C001F8DF8 /* Upload */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "clean build program -C \"$(PROJECT)\"";
-			buildConfigurationList = C4E7FB071CD4214200D90DC6 /* Build configuration list for PBXLegacyTarget "Upload" */;
+			buildConfigurationList = C46B73901CD4703C001F8DF8 /* Build configuration list for PBXLegacyTarget "Upload" */;
 			buildPhases = (
 			);
 			buildToolPath = make;
@@ -93,10 +92,10 @@
 			passBuildSettingsInEnvironment = 1;
 			productName = Upload;
 		};
-		C4E7FAF51CD4214200D90DC6 /* Clean */ = {
+		C46B737E1CD4703C001F8DF8 /* Clean */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "clean -C \"$(PROJECT)\"";
-			buildConfigurationList = C4E7FB0A1CD4214200D90DC6 /* Build configuration list for PBXLegacyTarget "Clean" */;
+			buildConfigurationList = C46B73931CD4703C001F8DF8 /* Build configuration list for PBXLegacyTarget "Clean" */;
 			buildPhases = (
 			);
 			buildToolPath = make;
@@ -109,11 +108,11 @@
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
-		C4E7FAF71CD4214200D90DC6 /* Index */ = {
+		C46B73801CD4703C001F8DF8 /* Index */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C4E7FB0D1CD4214200D90DC6 /* Build configuration list for PBXNativeTarget "Index" */;
+			buildConfigurationList = C46B73961CD4703C001F8DF8 /* Build configuration list for PBXNativeTarget "Index" */;
 			buildPhases = (
-				C4E7FAF61CD4214200D90DC6 /* Sources */,
+				C46B737F1CD4703C001F8DF8 /* Sources */,
 			);
 			buildRules = (
 			);
@@ -121,69 +120,69 @@
 			);
 			name = Index;
 			productName = Index;
-			productReference = C4E7FAF81CD4214200D90DC6 /* Index */;
+			productReference = C46B73811CD4703C001F8DF8 /* Index */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		C4E7FAEE1CD4214200D90DC6 /* Project object */ = {
+		C46B73771CD4703C001F8DF8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Ted Myers";
 				TargetAttributes = {
-					C4E7FAF21CD4214200D90DC6 = {
+					C46B737B1CD4703C001F8DF8 = {
 						CreatedOnToolsVersion = 7.2.1;
 					};
-					C4E7FAF31CD4214200D90DC6 = {
+					C46B737C1CD4703C001F8DF8 = {
 						CreatedOnToolsVersion = 7.2.1;
 					};
-					C4E7FAF41CD4214200D90DC6 = {
+					C46B737D1CD4703C001F8DF8 = {
 						CreatedOnToolsVersion = 7.2.1;
 					};
-					C4E7FAF51CD4214200D90DC6 = {
+					C46B737E1CD4703C001F8DF8 = {
 						CreatedOnToolsVersion = 7.2.1;
 					};
-					C4E7FAF71CD4214200D90DC6 = {
+					C46B73801CD4703C001F8DF8 = {
 						CreatedOnToolsVersion = 7.2.1;
 					};
 				};
 			};
-			buildConfigurationList = C4E7FAF11CD4214200D90DC6 /* Build configuration list for PBXProject "Drinkbot_Firmware" */;
+			buildConfigurationList = C46B737A1CD4703C001F8DF8 /* Build configuration list for PBXProject "Drinkbot Firmware" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = C4E7FAED1CD4214200D90DC6;
-			productRefGroup = C4E7FAF91CD4214200D90DC6 /* Products */;
+			mainGroup = C46B73761CD4703C001F8DF8;
+			productRefGroup = C46B73821CD4703C001F8DF8 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C4E7FAF21CD4214200D90DC6 /* All */,
-				C4E7FAF31CD4214200D90DC6 /* Build */,
-				C4E7FAF41CD4214200D90DC6 /* Upload */,
-				C4E7FAF51CD4214200D90DC6 /* Clean */,
-				C4E7FAF71CD4214200D90DC6 /* Index */,
+				C46B737B1CD4703C001F8DF8 /* All */,
+				C46B737C1CD4703C001F8DF8 /* Build */,
+				C46B737D1CD4703C001F8DF8 /* Upload */,
+				C46B737E1CD4703C001F8DF8 /* Clean */,
+				C46B73801CD4703C001F8DF8 /* Index */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C4E7FAF61CD4214200D90DC6 /* Sources */ = {
+		C46B737F1CD4703C001F8DF8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C4E7FAFC1CD4214200D90DC6 /* main.c in Sources */,
+				C46B73851CD4703C001F8DF8 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		C4E7FAFF1CD4214200D90DC6 /* Debug */ = {
+		C46B73881CD4703C001F8DF8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -231,7 +230,7 @@
 			};
 			name = Debug;
 		};
-		C4E7FB001CD4214200D90DC6 /* Release */ = {
+		C46B73891CD4703C001F8DF8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -275,63 +274,63 @@
 			};
 			name = Release;
 		};
-		C4E7FB021CD4214200D90DC6 /* Debug */ = {
+		C46B738B1CD4703C001F8DF8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		C4E7FB031CD4214200D90DC6 /* Release */ = {
+		C46B738C1CD4703C001F8DF8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
-		C4E7FB051CD4214200D90DC6 /* Debug */ = {
+		C46B738E1CD4703C001F8DF8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
 			name = Debug;
 		};
-		C4E7FB061CD4214200D90DC6 /* Release */ = {
+		C46B738F1CD4703C001F8DF8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
 			name = Release;
 		};
-		C4E7FB081CD4214200D90DC6 /* Debug */ = {
+		C46B73911CD4703C001F8DF8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
 			name = Debug;
 		};
-		C4E7FB091CD4214200D90DC6 /* Release */ = {
+		C46B73921CD4703C001F8DF8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
 			name = Release;
 		};
-		C4E7FB0B1CD4214200D90DC6 /* Debug */ = {
+		C46B73941CD4703C001F8DF8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
 			name = Debug;
 		};
-		C4E7FB0C1CD4214200D90DC6 /* Release */ = {
+		C46B73951CD4703C001F8DF8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
 			name = Release;
 		};
-		C4E7FB0E1CD4214200D90DC6 /* Debug */ = {
+		C46B73971CD4703C001F8DF8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
 			name = Debug;
 		};
-		C4E7FB0F1CD4214200D90DC6 /* Release */ = {
+		C46B73981CD4703C001F8DF8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 			};
@@ -340,61 +339,56 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C4E7FAF11CD4214200D90DC6 /* Build configuration list for PBXProject "Drinkbot_Firmware" */ = {
+		C46B737A1CD4703C001F8DF8 /* Build configuration list for PBXProject "Drinkbot Firmware" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C4E7FAFF1CD4214200D90DC6 /* Debug */,
-				C4E7FB001CD4214200D90DC6 /* Release */,
+				C46B73881CD4703C001F8DF8 /* Debug */,
+				C46B73891CD4703C001F8DF8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C4E7FB011CD4214200D90DC6 /* Build configuration list for PBXLegacyTarget "All" */ = {
+		C46B738A1CD4703C001F8DF8 /* Build configuration list for PBXLegacyTarget "All" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C4E7FB021CD4214200D90DC6 /* Debug */,
-				C4E7FB031CD4214200D90DC6 /* Release */,
+				C46B738B1CD4703C001F8DF8 /* Debug */,
+				C46B738C1CD4703C001F8DF8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
-		C4E7FB041CD4214200D90DC6 /* Build configuration list for PBXLegacyTarget "Build" */ = {
+		C46B738D1CD4703C001F8DF8 /* Build configuration list for PBXLegacyTarget "Build" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C4E7FB051CD4214200D90DC6 /* Debug */,
-				C4E7FB061CD4214200D90DC6 /* Release */,
+				C46B738E1CD4703C001F8DF8 /* Debug */,
+				C46B738F1CD4703C001F8DF8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
-		C4E7FB071CD4214200D90DC6 /* Build configuration list for PBXLegacyTarget "Upload" */ = {
+		C46B73901CD4703C001F8DF8 /* Build configuration list for PBXLegacyTarget "Upload" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C4E7FB081CD4214200D90DC6 /* Debug */,
-				C4E7FB091CD4214200D90DC6 /* Release */,
+				C46B73911CD4703C001F8DF8 /* Debug */,
+				C46B73921CD4703C001F8DF8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
-		C4E7FB0A1CD4214200D90DC6 /* Build configuration list for PBXLegacyTarget "Clean" */ = {
+		C46B73931CD4703C001F8DF8 /* Build configuration list for PBXLegacyTarget "Clean" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C4E7FB0B1CD4214200D90DC6 /* Debug */,
-				C4E7FB0C1CD4214200D90DC6 /* Release */,
+				C46B73941CD4703C001F8DF8 /* Debug */,
+				C46B73951CD4703C001F8DF8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
-		C4E7FB0D1CD4214200D90DC6 /* Build configuration list for PBXNativeTarget "Index" */ = {
+		C46B73961CD4703C001F8DF8 /* Build configuration list for PBXNativeTarget "Index" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C4E7FB0E1CD4214200D90DC6 /* Debug */,
-				C4E7FB0F1CD4214200D90DC6 /* Release */,
+				C46B73971CD4703C001F8DF8 /* Debug */,
+				C46B73981CD4703C001F8DF8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = C4E7FAEE1CD4214200D90DC6 /* Project object */;
+	rootObject = C46B73771CD4703C001F8DF8 /* Project object */;
 }
