@@ -101,7 +101,7 @@ void pourDrink_timed(void) // uses volatile global variables to pour drink
     {
         RELAY_PORT |= _BV(RELAY_PIN);
         _delay_ms(1);
-        pourCounter--;
+        --pourCounter;
     }
     
     RELAY_PORT &= ~_BV(RELAY_PIN); // stop pouring
@@ -119,13 +119,16 @@ ISR(SW_INT_VECT) // put in vector
     switch ( SW_PIN )
     {
         case _BV(SW_GREEN):                   // green button pressed
+            pour_drink = true;
             
         case _BV(SW_RED):                     // red button pressed
+            pour_drink = true;
             
         case ( _BV(SW_GREEN) | _BV(SW_RED) ):   // both switched pressed
-            // Only green switch pressed
+            pour_drink = false;
             
         default: // no switches pressed/error
+            pour_drink = false;
     }
     
     
@@ -158,7 +161,9 @@ int main(void)
     sei();
     
     if (pour_drink)
-        pourDrink();
+    {
+        pourDrink_timed();
+    }
     
     // loops forever
     for (;;)
