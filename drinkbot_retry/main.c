@@ -112,6 +112,10 @@ void pourDrink_timed(void) // uses volatile global variables to pour drink
 
 ISR(SW_INT_VECT) // put in vector
 {
+    
+    // delay for debounce
+    _delay_ms(1);
+    
     switch ( SW_PIN )
     {
         case _BV(SW_GREEN):                   // green button pressed
@@ -120,6 +124,8 @@ ISR(SW_INT_VECT) // put in vector
             
         case ( _BV(SW_GREEN) | _BV(SW_RED) ):   // both switched pressed
             // Only green switch pressed
+            
+        default: // no switches pressed/error
     }
     
     
